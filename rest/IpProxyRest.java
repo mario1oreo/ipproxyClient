@@ -92,7 +92,7 @@ public class IpProxyRest {
             }
     )
     @RequestMapping(value = "/getProxy", method = GET)
-    private JSONObject getProxy(String userID, String domain, String testUrl, String lockedTime) {
+    private JSONObject getProxy(String userID, String domain, String testUrl,@RequestParam(defaultValue = "15") String lockedTime) {
 
         StringBuilder errorMessage = new StringBuilder();
         JSONObject result = new JSONObject();

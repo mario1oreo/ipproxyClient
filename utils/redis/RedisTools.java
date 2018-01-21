@@ -1,20 +1,10 @@
 package com.fosun.financial.data.proxy.ipproxyclient.utils.redis;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fosun.financial.data.proxy.ipproxyclient.utils.common.PropertiesUtil;
-import com.virjar.dungproxy.client.ippool.IpPool;
-import com.virjar.dungproxy.client.ningclient.concurrent.NamedThreadFactory;
-import com.xiaoleilu.hutool.http.HttpUtil;
-import org.springframework.scheduling.annotation.Async;
+import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Redis相关的处理方法
@@ -22,7 +12,7 @@ import java.util.concurrent.Executors;
  * @author mario1oreo
  * @date 2018-1-2 17:33:47
  */
-public class RedisTools implements Runnable{
+public class RedisTools{
     protected static JedisPool pool = null;
 
     public RedisTools() {
@@ -31,11 +21,18 @@ public class RedisTools implements Runnable{
 
     public static Jedis initPool() {
         if (pool == null) {
-            pool = new JedisPool(new JedisPoolConfig(),
-                    PropertiesUtil.getApplicationValue("ip.proxy.redis.ip", "localhost"),
-                    Integer.valueOf(PropertiesUtil.getApplicationValue("ip.proxy.redis.port", "6379")),
-                    Integer.valueOf(PropertiesUtil.getApplicationValue("ip.proxy.redis.timeout", "3000")),
-                    PropertiesUtil.getApplicationValue("ip.proxy.redis.password", "bigdata"));
+            if (StringUtils.isEmpty(PropertiesUtil.getApplicationValue("ip.proxy.redis.password", ""))) {
+                pool = new JedisPool(new JedisPoolConfig(),
+                        PropertiesUtil.getApplicationValue("ip.proxy.redis.ip", "localhost"),
+                        Integer.valueOf(PropertiesUtil.getApplicationValue("ip.proxy.redis.port", "6379")),
+                        Integer.valueOf(PropertiesUtil.getApplicationValue("ip.proxy.redis.timeout", "3000")));
+            } else {
+                pool = new JedisPool(new JedisPoolConfig(),
+                        PropertiesUtil.getApplicationValue("ip.proxy.redis.ip", "localhost"),
+                        Integer.valueOf(PropertiesUtil.getApplicationValue("ip.proxy.redis.port", "6379")),
+                        Integer.valueOf(PropertiesUtil.getApplicationValue("ip.proxy.redis.timeout", "3000")),
+                        PropertiesUtil.getApplicationValue("ip.proxy.redis.password", "bigdata"));
+            }
         }
         Jedis jedis = pool.getResource();
         jedis.select(Integer.valueOf(PropertiesUtil.getApplicationValue("ip.proxy.redis.lib", "2")));
@@ -215,34 +212,18 @@ public class RedisTools implements Runnable{
         }
     }
 
-    @Override
-    public void run() {
-        bind("www.creditchina.gov.cn", "http://www.creditchina.gov.cn/api/credit_info_search?keyword=%E7%99%BE%E5%BA%A6&templateId=&page=1&pageSize=10");
-    }
 
-    public void bind(String domain, String url) {
-        IpPool.getInstance().bind(domain, url);
-    }
     public static void main(String[] args) {
-//        System.out.println("==================>>?>>>>>>>   kaishi ");
-//        int size = Runtime.getRuntime().availableProcessors();
-//        System.out.println("size = " + size);
-//        ExecutorService pool = Executors.newFixedThreadPool(4, new NamedThreadFactory("myself-preheat"));
-//        pool.execute(new RedisTools());
-//
-////        new RedisTools().bind("www.creditchina.gov.cn","http://www.creditchina.gov.cn/api/credit_info_search?keyword=%E7%99%BE%E5%BA%A6&templateId=&page=1&pageSize=10");
-//        System.out.println("==================>>?>>>>>>>   jieshu ");
 
-        new RedisTools().sismemberSortSet("PROXY_SCORE_SORT_SET_user0001_www.creditchina.gov.cn", "123123123123123");
+        double current = 0.5;
+        for (int i = 0; i < 100; i++) {
+            current = (current *14+0)/15;
+            if (current < 0.3) {
+                System.out.println("i = " + i);
+                System.out.println("current = " + current);
+                break;
+            }
+        }
 
-//        Map<String,Object> map  = new HashMap<String,Object>();
-//        map.put("busSysNm","云风控");
-//        map.put("dataApiCd","ff_indv_bl");
-//        Map param = new HashMap<String,String>();
-//        param.put("id","512322197212204151");
-//        param.put("name","徐之成");
-//        map.put("paramMap",param);
-//        String respStr = HttpUtil.post("http://10.166.1.52:8100/dataservice/api/dataApiQuery", JSONObject.toJSONString(map));
-//        System.out.println("respStr = " + respStr);
     }
 }
