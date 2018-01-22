@@ -29,6 +29,7 @@ public class KeyConstant {
 
 
 
+    public static final int LIVE_TIME_55_MINUTES = 3300;
     public static final int LIVE_TIME_1_HOUR = 3600;
     public static final int LIVE_TIME_4_HOUR = 14400;
     public static final int LIVE_TIME_5_HOUR = 18000;

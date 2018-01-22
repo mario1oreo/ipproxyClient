@@ -546,7 +546,7 @@ public class IpProxyRest {
     private JSONObject preHeatDomainDynamic(String userID, String domain, String type, String topicName, String expectContent) {
         JSONObject result = new JSONObject();
         String preHeatFlagKey = KeyConstant.PREHEAT_FLAG_LIST + userID + KeyConstant.UNDER_LINE + domain;
-        if (!redisTools.existKey(preHeatFlagKey)) {
+        if (!redisTools.existKey(preHeatFlagKey) || (redisTools.existKey(preHeatFlagKey) && redisTools.ttlKey(preHeatFlagKey) < KeyConstant.LIVE_TIME_55_MINUTES)) {
             redisTools.setStr(preHeatFlagKey, KeyConstant.LIVE_TIME_1_HOUR);
             result.put(KeyConstant.RETURN_MESSAGE_KEY, "离线预热已启动！");
             result.put(KeyConstant.RETURN_TYPE_KEY, KeyConstant.RETURN_TYPE_VALUE_SUCCEED);
