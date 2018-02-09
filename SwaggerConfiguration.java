@@ -31,7 +31,8 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo())
                 .select()
                 .build()
-                .pathMapping("/ip");
+//                .pathMapping("/ip")
+                ;
     }
 
     private ApiInfo apiInfo() {
